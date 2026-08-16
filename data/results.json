@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "public_scope": "identifier-free aggregate evidence only",
+  "cohorts": {"linker_coverage": 1093, "attribution": 987, "other_patient_substitution": 948},
+  "main": [
+    {"method": "complete_scanpath_density", "pointing": 0.4063, "iou": 0.2008, "axis": "deterministic"},
+    {"method": "temporal_1.5s", "pointing": 0.6211, "iou": 0.2773, "axis": "deterministic"},
+    {"method": "combined_structured_1.5s", "pointing": 0.7923, "iou": 0.3439, "axis": "deterministic"},
+    {"method": "combined_structured_3.0s", "pointing": 0.7893, "iou": 0.3549, "axis": "deterministic"},
+    {"method": "learned_selector", "pointing": 0.8245, "iou": 0.3584, "axis": "five_optimizer_seed_mean"}
+  ],
+  "paired_seed0_vs_structured_3.0s": {
+    "pointing": {"delta": 0.0405, "ci95": [0.0108, 0.0696]},
+    "iou": {"delta": 0.0036, "ci95": [-0.0039, 0.0108]}
+  },
+  "data_policy": "No submitted manuscript, credentialed images, raw records, identifiers, or patient-level predictions are included."
+}

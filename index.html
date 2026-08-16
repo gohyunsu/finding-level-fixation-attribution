@@ -11,7 +11,7 @@
 <body>
   <header class="site-header">
     <a class="wordmark" href="#top" aria-label="Finding-Level Fixation Attribution home">
-      <span class="mark" aria-hidden="true"></span>
+      <span class="mascot-logo" aria-hidden="true">🦫</span>
       <span>Fixation Attribution</span>
     </a>
     <nav aria-label="Page navigation">
@@ -23,6 +23,11 @@
 
   <main id="top">
     <section class="hero">
+      <div class="team-badge" aria-label="BEAVER team">
+        <span aria-hidden="true">🦫</span>
+        <strong>BEAVER Team</strong>
+        <span aria-hidden="true">🦦</span>
+      </div>
       <p class="eyebrow">IEEE MedAI 2026 · Research Report</p>
       <h1>Finding-Level Fixation Attribution in Chest Radiography</h1>
       <p class="subtitle">Comparing learned selection with structured baselines</p>
@@ -31,8 +36,34 @@
         <span class="thesis-label">Result in one line</span>
         <p>Structured references approach learned overlap; the learned difference is clearer for peak placement, modest overall, and heterogeneous across findings.</p>
       </div>
-      <p class="authors">Sumin Lee · Hyunsu Go · Subeen Lee · Kyeonghun Kim · Nam-Joon Kim</p>
-      <p class="affiliations">Seoul National University · OUTTA</p>
+      <div class="author-grid" aria-label="Authors and affiliations">
+        <article class="author-card">
+          <span class="author-avatar" aria-hidden="true">SML</span>
+          <strong>Sumin Lee<sup>†</sup></strong>
+          <span>Seoul National University</span>
+        </article>
+        <article class="author-card">
+          <span class="author-avatar" aria-hidden="true">HG</span>
+          <strong>Hyunsu Go<sup>†</sup></strong>
+          <span>Seoul National University</span>
+        </article>
+        <article class="author-card">
+          <span class="author-avatar" aria-hidden="true">SBL</span>
+          <strong>Subeen Lee</strong>
+          <span>Seoul National University</span>
+        </article>
+        <article class="author-card">
+          <span class="author-avatar" aria-hidden="true">KK</span>
+          <strong>Kyeonghun Kim</strong>
+          <span>OUTTA</span>
+        </article>
+        <article class="author-card">
+          <span class="author-avatar" aria-hidden="true">NK</span>
+          <strong>Nam-Joon Kim<sup>*</sup></strong>
+          <span>Seoul National University</span>
+        </article>
+      </div>
+      <p class="author-note"><span>† Equal contribution</span><span>* Corresponding author</span></p>
       <div class="chips" aria-label="Study characteristics">
         <span>Offline attribution</span><span>Complete scanpath</span><span>Resolved mentions</span><span>Patient-disjoint evaluation</span>
       </div>
@@ -150,7 +181,7 @@
   </main>
 
   <footer>
-    <p>Finding-Level Fixation Attribution · IEEE MedAI 2026 Research Report</p>
+    <p><span aria-hidden="true">🦫</span> BEAVER Team · Finding-Level Fixation Attribution</p>
     <p>This page does not distribute the submitted manuscript or credentialed health data.</p>
   </footer>
 </body>

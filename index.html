@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Project page for a structured-baseline analysis of finding-level fixation attribution in chest radiography.">
+  <title>Finding-Level Fixation Attribution</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="Finding-Level Fixation Attribution home">
+      <span class="mark" aria-hidden="true"></span>
+      <span>Fixation Attribution</span>
+    </a>
+    <nav aria-label="Page navigation">
+      <a href="#task">Task</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#interpretation">Interpretation</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <p class="eyebrow">IEEE MedAI 2026 · Research Report</p>
+      <h1>Finding-Level Fixation Attribution in Chest Radiography</h1>
+      <p class="subtitle">Comparing learned selection with structured baselines</p>
+      <p class="lead">A completed radiologist scanpath mixes evidence for multiple reported findings. We ask how much finding-specific localization can be recovered by explicit structure—and what remains for a learned fixation selector.</p>
+      <div class="thesis">
+        <span class="thesis-label">Result in one line</span>
+        <p>Structured references approach learned overlap; the learned difference is clearer for peak placement, modest overall, and heterogeneous across findings.</p>
+      </div>
+      <p class="authors">Sumin Lee · Hyunsu Go · Subeen Lee · Kyeonghun Kim · Nam-Joon Kim</p>
+      <p class="affiliations">Seoul National University · Yonsei University · Seoul National University Hospital · ROKAF</p>
+      <div class="chips" aria-label="Study characteristics">
+        <span>Offline attribution</span><span>Complete scanpath</span><span>Resolved mentions</span><span>Patient-disjoint evaluation</span>
+      </div>
+    </section>
+
+    <section class="cohort-strip" aria-label="Evaluation populations">
+      <article><strong>1,093</strong><span>linker coverage denominator</span></article>
+      <span class="flow-arrow" aria-hidden="true">→</span>
+      <article><strong>987</strong><span>mention-resolved attribution cases</span></article>
+      <span class="flow-arrow" aria-hidden="true">→</span>
+      <article><strong>948</strong><span>exact-match substitution subset</span></article>
+    </section>
+
+    <section id="task" class="section task-section">
+      <div class="section-copy">
+        <p class="eyebrow">The task</p>
+        <h2>From one complete scanpath to one finding-specific map</h2>
+        <p>After the reading is complete, a resolved positive mention conditions the selection of fixations. The selected weights are rendered at the original fixation coordinates and evaluated against the released finding region.</p>
+        <ol class="stage-list" aria-label="Interactive stages">
+          <li><button class="stage-button active" data-stage="0"><span>01</span><strong>Observe</strong><small>Complete scanpath</small></button></li>
+          <li><button class="stage-button" data-stage="1"><span>02</span><strong>Select</strong><small>Finding-conditioned weights</small></button></li>
+          <li><button class="stage-button" data-stage="2"><span>03</span><strong>Localize</strong><small>Gaze-supported map</small></button></li>
+        </ol>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-topline">
+          <div><span class="live-dot"></span><span id="stage-name">Complete scanpath</span></div>
+          <button id="play-toggle" class="play-toggle" type="button" aria-pressed="true" aria-label="Pause automatic replay">Pause</button>
+        </div>
+        <svg id="attribution-demo" viewBox="0 0 660 720" role="img" aria-labelledby="demo-title demo-desc">
+          <title id="demo-title">Illustrative fixation-attribution replay</title>
+          <desc id="demo-desc">A schematic chest image cycles through a complete scanpath, finding-conditioned fixation weights, and a localization map.</desc>
+          <defs>
+            <radialGradient id="heat" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#ffb15a" stop-opacity=".92"/>
+              <stop offset=".45" stop-color="#e9784f" stop-opacity=".58"/>
+              <stop offset="1" stop-color="#e9784f" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="thorax" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#23343d"/><stop offset="1" stop-color="#111b21"/>
+            </linearGradient>
+          </defs>
+          <rect class="film" x="20" y="20" width="620" height="680" rx="28"/>
+          <path class="body-outline" d="M214 75 Q150 92 114 182 Q83 263 96 425 Q104 555 180 632 Q248 681 330 681 Q412 681 480 632 Q556 555 564 425 Q577 263 546 182 Q510 92 446 75 Q390 58 330 65 Q270 58 214 75Z"/>
+          <path class="lung" d="M273 132 Q183 127 147 226 Q122 315 144 475 Q165 579 264 604 Q307 590 302 511 L302 185 Q298 148 273 132Z"/>
+          <path class="lung" d="M387 132 Q477 127 513 226 Q538 315 516 475 Q495 579 396 604 Q353 590 358 511 L358 185 Q362 148 387 132Z"/>
+          <path class="spine" d="M319 104 Q330 95 341 104 L348 580 Q330 600 312 580Z"/>
+          <path class="heart" d="M329 355 Q372 295 430 340 Q484 388 433 516 Q391 582 315 553 Q270 526 279 452 Q286 397 329 355Z"/>
+          <path class="clavicle" d="M183 146 Q245 104 315 142"/><path class="clavicle" d="M477 146 Q415 104 345 142"/>
+          <g id="target-region"><ellipse cx="437" cy="292" rx="75" ry="96"/></g>
+          <g id="heat-layer"></g>
+          <polyline id="scanpath-line" points=""/>
+          <g id="fixation-layer"></g>
+          <circle id="cursor" r="9" cx="0" cy="0"/>
+          <g class="legend" transform="translate(54 650)">
+            <circle cx="0" cy="0" r="6" class="legend-fix"/><text x="14" y="5">fixation</text>
+            <line x1="112" x2="142" y1="0" y2="0" class="legend-target"/><text x="152" y="5">reference region</text>
+          </g>
+        </svg>
+        <div class="timeline">
+          <label for="fixation-time">Scanpath progress</label>
+          <input id="fixation-time" type="range" min="1" max="16" value="16">
+          <output id="fixation-count" for="fixation-time">16 / 16</output>
+        </div>
+        <p class="asset-note">Public schematic replay. Credentialed MIMIC-CXR/REFLACX images and patient-level records are not redistributed.</p>
+      </div>
+    </section>
+
+    <section id="evidence" class="section evidence-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">Main evidence · n = 987</p><h2>Strong references change the conclusion</h2></div>
+        <div class="metric-toggle" role="group" aria-label="Metric">
+          <button class="metric-button active" data-metric="pointing" type="button">Peak placement</button>
+          <button class="metric-button" data-metric="iou" type="button">IoU</button>
+        </div>
+      </div>
+      <p class="section-intro">A temporal reference leaves a large apparent gain. Adding training-only anatomy, target-record scanpath support, directional terms, and temporal gating closes most of it. The 3.0-second row is the strongest tested overlap reference, not a claimed optimum.</p>
+      <div id="result-chart" class="result-chart" aria-live="polite"></div>
+      <div class="evidence-note">
+        <strong id="metric-claim">Peak placement retains a visible learned difference.</strong>
+        <span id="metric-detail">Seed-0 learned minus the 3.0-s structured reference: +0.0405, 95% patient-cluster interval +0.0108 to +0.0696.</span>
+      </div>
+    </section>
+
+    <section class="section two-column">
+      <article>
+        <p class="eyebrow">Not one uniform effect</p>
+        <h2>Learning helps some findings and not others</h2>
+        <p>The learned-minus-structured difference changes sign across finding categories. Use the control to switch metrics; positive bars favor learned selection.</p>
+        <div class="metric-toggle compact" role="group" aria-label="Heterogeneity metric">
+          <button class="heterogeneity-button active" data-metric="pointing" type="button">Peak placement</button>
+          <button class="heterogeneity-button" data-metric="iou" type="button">IoU</button>
+        </div>
+        <div id="heterogeneity-chart" class="heterogeneity-chart"></div>
+      </article>
+      <article class="budget-card">
+        <p class="eyebrow">Ellipse supervision</p>
+        <h2>The learned advantage depends on training scale</h2>
+        <p>With 10–50% of training patients, structured overlap remains competitive or higher. Learned overlap exceeds it only with the full training set in this sensitivity analysis.</p>
+        <div id="fraction-chart" class="fraction-chart" aria-label="IoU by annotation fraction"></div>
+        <p class="fine-print">Partial rows: mean ± sample SD across five nested patient subsample chains at fixed optimizer seed 0. The 100% row is one run.</p>
+      </article>
+    </section>
+
+    <section id="interpretation" class="section interpretation-section">
+      <div><p class="eyebrow">Interpretation</p><h2>What the evidence supports</h2></div>
+      <div class="claim-grid">
+        <article><span>01</span><h3>Baseline design matters</h3><p>Temporal-only comparisons overstate what learning adds when anatomy, scanpath coverage, and directional language are available.</p></article>
+        <article><span>02</span><h3>Peak and extent differ</h3><p>The strongest paired comparison supports a peak-placement difference but does not resolve an IoU difference.</p></article>
+        <article><span>03</span><h3>Records are not interchangeable</h3><p>Coarsely matched other-patient records perform worse than target records; this is evidence of non-interchangeability, not cognitive-intent recovery.</p></article>
+      </div>
+      <div class="boundary"><strong>Scope boundary</strong><p>The selector is ellipse-supervised and uses no radiograph pixels. The study does not establish annotation savings, online deployment, causal cue contributions, or downstream image-model utility.</p></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Finding-Level Fixation Attribution · IEEE MedAI 2026 Research Report</p>
+    <p>This page does not distribute the submitted manuscript or credentialed health data.</p>
+  </footer>
+</body>
+</html>

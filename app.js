@@ -142,10 +142,11 @@ document.querySelector("#play-toggle").addEventListener("click", (event) => {
 
 function renderResults(metric) {
   const model = results[metric];
-  document.querySelector("#result-chart").innerHTML = model.rows.map(([label, value, kind]) => `
+  const scale = `<div class="result-scale" aria-hidden="true"><span></span><div><span>0</span><span>${model.max.toFixed(2)}</span></div><span></span></div>`;
+  document.querySelector("#result-chart").innerHTML = scale + model.rows.map(([label, value, kind]) => `
     <div class="result-row ${kind || ""}">
       <span class="result-label">${label}</span>
-      <span class="result-track"><span class="result-bar" style="width:${value / model.max * 100}%"></span></span>
+      <span class="result-track" role="img" aria-label="${label}: ${value.toFixed(4)}"><span class="result-bar" style="width:${value / model.max * 100}%"></span></span>
       <span class="result-value">${value.toFixed(3)}</span>
     </div>`).join("");
   document.querySelector("#metric-claim").textContent = model.claim;

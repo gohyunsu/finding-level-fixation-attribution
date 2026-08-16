@@ -3,6 +3,8 @@
 Public, manuscript-free project page for **“Finding-Level Fixation Attribution in
 Chest Radiography: Comparing Learned Selection with Structured Baselines.”**
 
+**Live site:** https://gohyunsu.github.io/finding-level-fixation-attribution/
+
 The page communicates the paper’s central result with three elements:
 
 1. an automatically playing, interactive schematic of complete-scanpath attribution;

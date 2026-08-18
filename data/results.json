@@ -1,17 +1,51 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "public_scope": "identifier-free aggregate evidence only",
-  "cohorts": {"linker_coverage": 1093, "attribution": 987, "other_patient_substitution": 948},
+  "result_contract": "consistent_five_seed_revision_2026-08-18",
+  "cohorts": {
+    "linker_coverage": 1093,
+    "attribution": 987,
+    "other_patient_substitution": 948
+  },
   "main": [
-    {"method": "complete_scanpath_density", "pointing": 0.4063, "iou": 0.2008, "axis": "deterministic"},
-    {"method": "temporal_1.5s", "pointing": 0.6211, "iou": 0.2773, "axis": "deterministic"},
-    {"method": "combined_structured_1.5s", "pointing": 0.7923, "iou": 0.3439, "axis": "deterministic"},
-    {"method": "combined_structured_3.0s", "pointing": 0.7893, "iou": 0.3549, "axis": "deterministic"},
-    {"method": "learned_selector", "pointing": 0.8245, "iou": 0.3584, "axis": "five_optimizer_seed_mean"}
+    {"method": "complete_scanpath_density", "label": "Complete scanpath density", "pointing": 0.4063, "iou": 0.2008, "axis": "deterministic"},
+    {"method": "temporal_1.5s", "label": "1.5-s temporal", "pointing": 0.6211, "iou": 0.2773, "axis": "deterministic"},
+    {"method": "combined_structured_1.5s", "label": "1.5-s combined structured", "pointing": 0.7923, "iou": 0.3439, "axis": "deterministic"},
+    {"method": "combined_structured_3.0s", "label": "3.0-s combined structured", "pointing": 0.7893, "iou": 0.3549, "axis": "deterministic"},
+    {"method": "learned_selector", "label": "Learned selector · 5-seed mean", "pointing": 0.8245, "iou": 0.3584, "axis": "per_instance_five_optimizer_seed_mean"}
   ],
-  "paired_seed0_vs_structured_3.0s": {
-    "pointing": {"delta": 0.0405, "ci95": [0.0108, 0.0696]},
-    "iou": {"delta": 0.0036, "ci95": [-0.0039, 0.0108]}
+  "paired_five_seed_mean_vs_structured_3.0s": {
+    "pointing": {"delta": 0.0353, "ci95": [0.0067, 0.0634], "patient_signed_rank_p": 0.0766815},
+    "iou": {"delta": 0.0035, "ci95": [-0.0034, 0.0102], "patient_signed_rank_p": 0.841748}
+  },
+  "record_substitution_five_seed_mean": {
+    "target_record": {"pointing": 0.8281, "iou": 0.3605},
+    "matched_other_patient_records": {"pointing": 0.5464, "iou": 0.2836},
+    "target_minus_substitution": {
+      "pointing": {"delta": 0.2816, "ci95": [0.2473, 0.3159]},
+      "iou": {"delta": 0.0769, "ci95": [0.0653, 0.0885]}
+    }
+  },
+  "finding_heterogeneity_vs_structured_1.5s": [
+    {"finding": "Atelectasis", "pointing_delta": 0.0184, "iou_delta": 0.0188},
+    {"finding": "Consolidation", "pointing_delta": -0.0288, "iou_delta": -0.0032},
+    {"finding": "Cardiac silhouette", "pointing_delta": 0.0517, "iou_delta": 0.0796},
+    {"finding": "Ground-glass opacity", "pointing_delta": -0.0600, "iou_delta": 0.0004},
+    {"finding": "Lung nodule / mass", "pointing_delta": 0.1357, "iou_delta": -0.0120},
+    {"finding": "Pleural abnormality", "pointing_delta": 0.1314, "iou_delta": 0.0118},
+    {"finding": "Pulmonary edema", "pointing_delta": -0.0178, "iou_delta": -0.0021}
+  ],
+  "training_fraction": [
+    {"label": "10%", "learned_iou": 0.319076, "structured_iou": 0.345680, "learned_pointing": 0.767740, "structured_pointing": 0.778120},
+    {"label": "25%", "learned_iou": 0.335380, "structured_iou": 0.351800, "learned_pointing": 0.802604, "structured_pointing": 0.790080},
+    {"label": "50%", "learned_iou": 0.341512, "structured_iou": 0.353480, "learned_pointing": 0.819048, "structured_pointing": 0.789480},
+    {"label": "100%", "learned_iou": 0.358340, "structured_iou": 0.354900, "learned_pointing": 0.824500, "structured_pointing": 0.789300}
+  ],
+  "patient_partition_five_seed_sensitivity": {
+    "partitions": 5,
+    "pointing_delta_range": [0.0167, 0.0356],
+    "iou_delta_range": [0.0002, 0.0122],
+    "interpretation": "overlapping sensitivity analyses, not independent replications"
   },
   "data_policy": "No submitted manuscript, credentialed images, raw records, identifiers, or patient-level predictions are included."
 }

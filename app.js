@@ -11,47 +11,51 @@ const stages = [
   { name: "Gaze-supported localization map", description: "Weighted fixations are rendered into a spatial map." }
 ];
 
-const results = {
-  pointing: {
-    max: .9,
-    rows: [
-      ["Complete scanpath density", .4063],
-      ["1.5-s temporal", .6211],
-      ["1.5-s combined structured", .7923],
-      ["3.0-s combined structured", .7893],
-      ["Learned selector · 5-seed mean", .8245, "learned"]
-    ],
-    claim: "Peak placement retains a visible learned difference.",
-    detail: "Seed-0 learned minus the 3.0-s structured reference: +0.0405, 95% patient-cluster interval +0.0108 to +0.0696."
-  },
-  iou: {
-    max: .4,
-    rows: [
-      ["Complete scanpath density", .2008],
-      ["1.5-s temporal", .2773],
-      ["1.5-s combined structured", .3439],
-      ["3.0-s combined structured", .3549],
-      ["Learned selector · 5-seed mean", .3584, "learned"]
-    ],
-    claim: "The strongest tested structured overlap nearly matches learned overlap.",
-    detail: "Seed-0 difference: +0.0036, 95% patient-cluster interval −0.0039 to +0.0108; patient-level signed-rank p = 0.665."
-  }
-};
+let results;
+let heterogeneity;
+let fractions;
 
-const heterogeneity = [
-  ["Atelectasis", .0184, .0188],
-  ["Consolidation", -.0288, -.0032],
-  ["Cardiac silhouette", .0517, .0796],
-  ["Ground-glass opacity", -.0600, .0004],
-  ["Lung nodule / mass", .1357, -.0120],
-  ["Pleural abnormality", .1314, .0118],
-  ["Pulmonary edema", -.0178, -.0021]
-];
+function signed(value, digits = 4) {
+  return `${value >= 0 ? "+" : "−"}${Math.abs(value).toFixed(digits)}`;
+}
 
-const fractions = [
-  ["10%", .3350, .3206], ["25%", .3408, .3327],
-  ["50%", .3423, .3389], ["100%", .3439, .3584]
-];
+async function loadResults() {
+  const response = await fetch("data/results.json", { cache: "no-store" });
+  if (!response.ok) throw new Error(`result registry request failed: ${response.status}`);
+  const data = await response.json();
+  const paired = data["paired_five_seed_mean_vs_structured_3.0s"];
+  const rows = (metric) => data.main.map((row) => [
+    row.label,
+    row[metric],
+    row.method === "learned_selector" ? "learned" : undefined
+  ]);
+  results = {
+    pointing: {
+      max: .9,
+      rows: rows("pointing"),
+      claim: "Peak placement retains a modest mean learned difference.",
+      detail: `Five-seed per-instance mean difference: ${signed(paired.pointing.delta)}, ` +
+        `95% patient-cluster interval ${signed(paired.pointing.ci95[0])} to ` +
+        `${signed(paired.pointing.ci95[1])}; patient-level signed-rank p = ` +
+        `${paired.pointing.patient_signed_rank_p.toFixed(4)}.`
+    },
+    iou: {
+      max: .4,
+      rows: rows("iou"),
+      claim: "The strongest tested structured overlap nearly matches learned overlap.",
+      detail: `Five-seed per-instance mean difference: ${signed(paired.iou.delta)}, ` +
+        `95% patient-cluster interval ${signed(paired.iou.ci95[0])} to ` +
+        `${signed(paired.iou.ci95[1])}; patient-level signed-rank p = ` +
+        `${paired.iou.patient_signed_rank_p.toFixed(4)}.`
+    }
+  };
+  heterogeneity = data["finding_heterogeneity_vs_structured_1.5s"].map((row) => [
+    row.finding, row.pointing_delta, row.iou_delta
+  ]);
+  fractions = data.training_fraction.map((row) => [
+    row.label, row.structured_iou, row.learned_iou
+  ]);
+}
 
 const svgNS = "http://www.w3.org/2000/svg";
 const fixationLayer = document.querySelector("#fixation-layer");
@@ -210,8 +214,17 @@ document.querySelectorAll(".metric-button, .heterogeneity-button").forEach((butt
 });
 document.addEventListener("visibilitychange", startMetricAutoplay);
 
-buildDemo();
-setMetric("pointing");
-renderFractions();
-startAutoplay();
-startMetricAutoplay();
+async function initialize() {
+  await loadResults();
+  buildDemo();
+  setMetric("pointing");
+  renderFractions();
+  startAutoplay();
+  startMetricAutoplay();
+}
+
+initialize().catch((error) => {
+  document.querySelector("#result-chart").textContent =
+    "Aggregate results could not be loaded.";
+  console.error(error);
+});

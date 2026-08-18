@@ -144,8 +144,8 @@
       <p class="section-intro">A temporal reference leaves a large apparent gain. Adding training-only anatomy, target-record scanpath support, directional terms, and temporal gating closes most of it. The 3.0-second row is the strongest tested overlap reference, not a claimed optimum.</p>
       <div id="result-chart" class="result-chart" aria-live="polite"></div>
       <div class="evidence-note">
-        <strong id="metric-claim">Peak placement retains a visible learned difference.</strong>
-        <span id="metric-detail">Seed-0 learned minus the 3.0-s structured reference: +0.0405, 95% patient-cluster interval +0.0108 to +0.0696.</span>
+        <strong id="metric-claim">Peak placement retains a modest mean learned difference.</strong>
+        <span id="metric-detail">Five-seed per-instance mean difference: +0.0353, 95% patient-cluster interval +0.0067 to +0.0634; patient-level signed-rank p = 0.0767.</span>
       </div>
     </section>
 
@@ -165,7 +165,7 @@
         <h2>The learned advantage depends on training scale</h2>
         <p>With 10–50% of training patients, structured overlap remains competitive or higher. Learned overlap exceeds it only with the full training set in this sensitivity analysis.</p>
         <div id="fraction-chart" class="fraction-chart" aria-label="IoU by annotation fraction"></div>
-        <p class="fine-print">Partial rows: mean ± sample SD across five nested patient subsample chains at fixed optimizer seed 0. The 100% row is one run.</p>
+        <p class="fine-print">Partial rows average five optimizer seeds within each of five nested patient-subsample chains before summarizing chains. The 100% row averages five optimizer seeds on the full patient set.</p>
       </article>
     </section>
 
@@ -174,7 +174,7 @@
       <div class="claim-grid">
         <article><span>01</span><h3>Baseline design matters</h3><p>Temporal-only comparisons overstate what learning adds when anatomy, scanpath coverage, and directional language are available.</p></article>
         <article><span>02</span><h3>Peak and extent differ</h3><p>The strongest paired comparison supports a peak-placement difference but does not resolve an IoU difference.</p></article>
-        <article><span>03</span><h3>Records are not interchangeable</h3><p>Coarsely matched other-patient records perform worse than target records; this is evidence of non-interchangeability, not cognitive-intent recovery.</p></article>
+        <article><span>03</span><h3>Records are not interchangeable</h3><p>Target records reach 0.828/0.361, versus 0.546/0.284 for coarsely matched other-patient records (peak/IoU). This supports non-interchangeability, not cognitive-intent recovery.</p></article>
       </div>
       <div class="boundary"><strong>Scope boundary</strong><p>The selector is ellipse-supervised and uses no radiograph pixels. The study does not establish annotation savings, online deployment, causal cue contributions, or downstream image-model utility.</p></div>
     </section>

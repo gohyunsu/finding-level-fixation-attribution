@@ -11,6 +11,10 @@ The page communicates the paper’s central result with three elements:
 2. metric-aware comparison of temporal, structured, and learned methods;
 3. concise views of finding heterogeneity and annotation-fraction sensitivity.
 
+All displayed quantitative values are loaded from `data/results.json`, the
+identifier-free public export of the completed five-seed revision contract. The
+site does not mix the earlier seed-0 inferential values with five-seed method means.
+
 ## Data and manuscript boundary
 
 This repository contains only identifier-free aggregate results and a code-generated

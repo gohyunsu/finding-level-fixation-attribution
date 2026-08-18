@@ -47,6 +47,25 @@ def main() -> None:
     data = json.loads((ROOT / "data" / "results.json").read_text(encoding="utf-8"))
     if data.get("cohorts") != {"linker_coverage": 1093, "attribution": 987, "other_patient_substitution": 948}:
         errors.append("public cohort summary violates the frozen cohort contract")
+    if data.get("result_contract") != "consistent_five_seed_revision_2026-08-18":
+        errors.append("public site does not identify the promoted five-seed contract")
+    paired = data.get("paired_five_seed_mean_vs_structured_3.0s", {})
+    if paired.get("pointing", {}).get("delta") != 0.0353:
+        errors.append("public pointing difference is not the five-seed estimate")
+    if paired.get("iou", {}).get("ci95") != [-0.0034, 0.0102]:
+        errors.append("public IoU interval is not the five-seed estimate")
+    fractions = {row.get("label"): row for row in data.get("training_fraction", [])}
+    if set(fractions) != {"10%", "25%", "50%", "100%"}:
+        errors.append("public training-fraction rows are incomplete")
+    elif (
+        fractions["10%"].get("learned_iou") != 0.319076
+        or fractions["50%"].get("structured_iou") != 0.353480
+        or fractions["100%"].get("learned_pointing") != 0.824500
+    ):
+        errors.append("public training-fraction values do not match the strict aggregate")
+    app = (ROOT / "app.js").read_text(encoding="utf-8")
+    if 'fetch("data/results.json"' not in app:
+        errors.append("interactive charts are not sourced from the public result registry")
     if errors:
         raise SystemExit("site validation failed:\n- " + "\n- ".join(errors))
     print("site validation passed: manuscript-free, identifier-free, restricted-image-free")

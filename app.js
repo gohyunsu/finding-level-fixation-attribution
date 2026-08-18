@@ -61,9 +61,13 @@ const cursor = document.querySelector("#cursor");
 const slider = document.querySelector("#fixation-time");
 const countOutput = document.querySelector("#fixation-count");
 let stage = 0;
-let playing = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let playing = !reducedMotion;
 let cursorTimer;
 let cursorIndex = 0;
+let activeMetric = "pointing";
+let metricTimer;
+const METRIC_INTERVAL = 6000;
 
 function buildDemo() {
   scanpathLine.setAttribute("points", fixations.map(([x,y]) => `${x},${y}`).join(" "));
@@ -173,6 +177,20 @@ function renderHeterogeneity(metric) {
   document.querySelectorAll(".heterogeneity-button").forEach((button) => button.classList.toggle("active", button.dataset.metric === metric));
 }
 
+function setMetric(metric) {
+  activeMetric = metric;
+  renderResults(metric);
+  renderHeterogeneity(metric);
+}
+
+function startMetricAutoplay() {
+  clearInterval(metricTimer);
+  if (reducedMotion || document.hidden) return;
+  metricTimer = setInterval(() => {
+    setMetric(activeMetric === "pointing" ? "iou" : "pointing");
+  }, METRIC_INTERVAL);
+}
+
 function renderFractions() {
   const min = .28, max = .37;
   const height = (v) => `${Math.max(4, (v - min) / (max - min) * 100)}%`;
@@ -184,11 +202,16 @@ function renderFractions() {
     </div>`).join("");
 }
 
-document.querySelectorAll(".metric-button").forEach((button) => button.addEventListener("click", () => renderResults(button.dataset.metric)));
-document.querySelectorAll(".heterogeneity-button").forEach((button) => button.addEventListener("click", () => renderHeterogeneity(button.dataset.metric)));
+document.querySelectorAll(".metric-button, .heterogeneity-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    setMetric(button.dataset.metric);
+    startMetricAutoplay();
+  });
+});
+document.addEventListener("visibilitychange", startMetricAutoplay);
 
 buildDemo();
-renderResults("pointing");
-renderHeterogeneity("pointing");
+setMetric("pointing");
 renderFractions();
 startAutoplay();
+startMetricAutoplay();

@@ -62,7 +62,6 @@ const slider = document.querySelector("#fixation-time");
 const countOutput = document.querySelector("#fixation-count");
 let stage = 0;
 let playing = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let stageTimer;
 let cursorTimer;
 let cursorIndex = 0;
 
@@ -87,12 +86,13 @@ function buildDemo() {
     heat.dataset.index = index;
     heatLayer.appendChild(heat);
   });
-  updateDemo();
+  setPlaybackPosition(0);
 }
 
 function updateDemo() {
   const visible = Number(slider.value);
   countOutput.value = `${visible} / ${fixations.length}`;
+  slider.setAttribute("aria-valuetext", `${visible} of ${fixations.length} fixations`);
   document.querySelector("#stage-name").textContent = stages[stage].name;
   document.querySelectorAll(".stage-button").forEach((button, index) => button.classList.toggle("active", index === stage));
   document.querySelectorAll(".fixation").forEach((circle, index) => {
@@ -105,33 +105,41 @@ function updateDemo() {
   document.querySelectorAll(".heat-spot").forEach((spot, index) => {
     spot.style.opacity = stage === 2 && index < visible ? Math.min(1, Number(fixations[index][2]) * 5.5) : 0;
   });
+  scanpathLine.setAttribute("points", fixations.slice(0, visible).map(([x,y]) => `${x},${y}`).join(" "));
   scanpathLine.style.opacity = stage === 0 ? .6 : .12;
   cursor.style.opacity = stage === 0 ? 1 : 0;
 }
 
+function setPlaybackPosition(index) {
+  cursorIndex = Math.max(0, Math.min(fixations.length - 1, index));
+  slider.value = String(cursorIndex + 1);
+  const [x,y] = fixations[cursorIndex];
+  cursor.setAttribute("cx", x);
+  cursor.setAttribute("cy", y);
+  updateDemo();
+}
+
 function setStage(next) {
   stage = next;
-  updateDemo();
-  cursorIndex = 0;
+  setPlaybackPosition(0);
 }
 
 function startAutoplay() {
-  clearInterval(stageTimer);
   clearInterval(cursorTimer);
   if (!playing) return;
-  stageTimer = setInterval(() => setStage((stage + 1) % stages.length), 3600);
   cursorTimer = setInterval(() => {
-    cursorIndex = (cursorIndex + 1) % fixations.length;
-    const [x,y] = fixations[cursorIndex];
-    cursor.setAttribute("cx", x);
-    cursor.setAttribute("cy", y);
+    if (cursorIndex === fixations.length - 1) {
+      setStage((stage + 1) % stages.length);
+    } else {
+      setPlaybackPosition(cursorIndex + 1);
+    }
   }, 230);
 }
 
 document.querySelectorAll(".stage-button").forEach((button) => {
   button.addEventListener("click", () => { setStage(Number(button.dataset.stage)); startAutoplay(); });
 });
-slider.addEventListener("input", updateDemo);
+slider.addEventListener("input", () => setPlaybackPosition(Number(slider.value) - 1));
 document.querySelector("#play-toggle").addEventListener("click", (event) => {
   playing = !playing;
   event.currentTarget.textContent = playing ? "Pause" : "Play";
